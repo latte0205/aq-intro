@@ -19,8 +19,7 @@
   --font-mono:'JetBrains Mono',ui-monospace,monospace;
   color-scheme:dark;
 }
-/* 手機瀏覽器網址列會動態收合，用 dvh 確保底部控制列不被吃掉（舊瀏覽器退回 100%） */
-html,body{height:100%;height:100dvh}
+html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);overflow:hidden}
 
 #stage{position:relative;height:100%;display:flex;flex-direction:column}
@@ -124,7 +123,7 @@ h2{font-size:clamp(24px,4.5vw,40px);font-weight:700;margin:0;text-align:center;t
 
 /* ─── 開場遮罩 ─── */
 #cover{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:22px;background:radial-gradient(ellipse at 50% 35%,#131920 0%,var(--bg) 70%);overflow:hidden}
+  gap:22px;background:radial-gradient(ellipse at 50% 35%,#131920 0%,var(--bg) 70%)}
 #cover .eyebrow{animation:none}
 #cover h1{font-size:clamp(28px,5.5vw,52px)}
 #playbtn{display:flex;align-items:center;gap:12px;background:var(--air);color:#06201c;border:none;border-radius:999px;
@@ -133,94 +132,6 @@ h2{font-size:clamp(24px,4.5vw,40px);font-weight:700;margin:0;text-align:center;t
 #playbtn:hover{transform:scale(1.04)}
 #cover .hint{font-size:12px;color:var(--fg-dim)}
 #cover.gone{opacity:0;visibility:hidden;transition:opacity .8s,visibility .8s}
-
-/* ─── 開場動畫:空氣流動 ─── */
-/* 青色氣流光暈,緩慢飄移像空氣對流 */
-.aurora{position:absolute;inset:-20%;pointer-events:none;
-  background:radial-gradient(42% 32% at 28% 32%,rgba(95,212,196,.09),transparent 70%),
-             radial-gradient(36% 30% at 72% 62%,rgba(95,212,196,.06),transparent 70%);
-  animation:aurora 18s ease-in-out infinite alternate}
-@keyframes aurora{from{transform:translate(-3%,-2%) rotate(-2deg)}to{transform:translate(3%,2%) rotate(2deg)}}
-/* 上升的發光空氣微粒 */
-.airflow{position:absolute;inset:0;pointer-events:none}
-.airflow i{position:absolute;bottom:-4%;border-radius:50%;background:var(--air);opacity:0;
-  box-shadow:0 0 6px rgba(95,212,196,.8);animation:rise linear infinite}
-@keyframes rise{0%{transform:translateY(0);opacity:0}12%{opacity:var(--o,.4)}85%{opacity:var(--o,.4)}100%{transform:translateY(-108vh);opacity:0}}
-/* 元素依序浮現 */
-#cover .cv{animation:coverin .9s cubic-bezier(.22,1,.36,1) backwards}
-#cover .e1{animation-delay:.15s}
-#cover .e3{animation-delay:.65s}
-#cover .e4{animation-delay:.95s}
-@keyframes coverin{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-/* 標題:鈦銀光澤週期性掃過 */
-#cover h1{background:linear-gradient(105deg,var(--fg) 42%,#fff 50%,var(--air) 54%,var(--fg) 62%);
-  background-size:220% 100%;background-position:120% 0;-webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:coverin .9s cubic-bezier(.22,1,.36,1) .38s backwards,sheen 5.5s ease-in-out 1.6s infinite}
-@keyframes sheen{0%{background-position:120% 0}45%,100%{background-position:-20% 0}}
-/* 播放鈕:呼吸光暈 + 聲納擴散環(呼應感測器意象) */
-.playwrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
-.playwrap .ring{position:absolute;inset:0;border-radius:999px;border:1px solid rgba(95,212,196,.55);
-  pointer-events:none;animation:sonar 2.8s ease-out infinite}
-.playwrap .ring.r2{animation-delay:1.4s}
-@keyframes sonar{from{transform:scale(1);opacity:.7}to{transform:scale(1.85);opacity:0}}
-#playbtn{animation:breathe 2.8s ease-in-out infinite;transition:transform .3s}
-@keyframes breathe{0%,100%{box-shadow:0 0 28px rgba(95,212,196,.18)}50%{box-shadow:0 0 56px rgba(95,212,196,.45)}}
-/* 遮罩淡出後停掉背景動畫省資源 */
-#cover.gone .airflow,#cover.gone .aurora{display:none}
-
-/* ─── 手機版（窄螢幕）─── */
-@media (max-width:640px){
-  /* 場景內容過高時允許直向捲動；safe center 讓內容超出時從頂端開始、不被裁切 */
-  .scene{gap:18px;padding:18px 16px 136px;justify-content:safe center;overflow-y:auto;overflow-x:hidden}
-  h1{letter-spacing:.03em}
-  .lede{font-size:14px;line-height:1.8}
-  /* S1 三節點改直向堆疊，連接線轉為縱向 */
-  .triad{flex-direction:column;align-items:center;gap:8px}
-  .node{min-width:160px;padding:12px 20px}
-  .wirerow{flex-direction:column;gap:3px;font-size:11px}
-  .wirerow i{width:1px;height:22px;background:linear-gradient(180deg,transparent,var(--air))}
-  /* S2 幽靈數字縮小才不會爆版，換行時保持置中 */
-  .ghostnum{font-size:clamp(22px,7vw,32px);text-align:center}
-  /* 裝置卡與儀表板縮小留白 */
-  .device{padding:16px 16px}
-  .dash{gap:10px}
-  .tile{padding:12px 12px}
-  .tile .v{font-size:22px}
-  /* S8 閉環膠囊縮小 */
-  .loop{gap:10px}
-  .loop .step{font-size:14px;letter-spacing:.22em;padding:8px 16px 8px 22px}
-  /* 字幕：縮小字級與內距，避免蓋住內容 */
-  #subs{bottom:calc(52px + env(safe-area-inset-bottom,0px));padding:0 12px}
-  #subs span{font-size:14px;padding:8px 14px;line-height:1.6}
-  /* 控制列緊湊化 */
-  #bar{gap:10px;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
-  #bar button{font-size:12px;padding:7px 11px}
-  .dots{gap:6px}
-  #timer{min-width:3em}
-  #playbtn{font-size:15px;padding:13px 30px 13px 26px}
-}
-/* 橫向手機（高度很矮）：整體再壓縮，三節點縮小讓它排成一列不被字幕蓋到 */
-@media (max-height:480px){
-  .scene{gap:12px;padding-bottom:110px;justify-content:safe center;overflow-y:auto}
-  h1{font-size:clamp(22px,5vh,32px)}
-  h2{font-size:clamp(18px,4.5vh,26px)}
-  .lede{font-size:13px;line-height:1.6}
-  .triad{gap:10px}
-  .node{min-width:92px;padding:10px 14px}
-  .node b{font-size:14px}
-  .wirerow i{width:30px}
-  .device{padding:12px 16px}
-  .device .dh{margin-bottom:10px}
-  .chips{gap:6px}
-  .tile{padding:10px 12px}
-  .tile .v{font-size:20px}
-  .sparkbox svg{height:48px}
-  .wave{height:44px}
-  .fan{font-size:40px}
-  .report{padding:14px 18px}
-  #subs{bottom:calc(48px + env(safe-area-inset-bottom,0px))}
-  #subs span{font-size:13px;padding:6px 12px}
-}
 </style>
 
 <div id="stage">
@@ -330,21 +241,17 @@ h2{font-size:clamp(24px,4.5vw,40px);font-weight:700;margin:0;text-align:center;t
     <div id="subs"><span id="subtext"></span></div>
 
     <div id="cover">
-      <div class="aurora" aria-hidden="true"></div>
-      <div class="airflow" id="airflow" aria-hidden="true"></div>
-      <div class="cv e1 eyebrow">專案說明影片 · 約 2 分鐘</div>
+      <div class="eyebrow">專案說明影片 · 約 2 分鐘</div>
       <h1>空品換氣智慧監控系統</h1>
-      <div class="cv e3 playwrap">
-        <span class="ring" aria-hidden="true"></span><span class="ring r2" aria-hidden="true"></span>
-        <button id="playbtn">▶&nbsp;播放</button>
-      </div>
-      <div class="cv e4 hint">含中文配音與字幕，請開啟聲音</div>
+      <button id="playbtn">▶&nbsp;播放</button>
+      <div class="hint">含中文配音與字幕，請開啟聲音</div>
     </div>
   </div>
 
   <div id="bar">
     <button id="toggle">播放</button>
     <button id="restart">重播</button>
+    <button id="bgm" aria-pressed="true">音樂：開</button>
     <div class="dots" id="dots"></div>
     <div id="timer">0/8</div>
   </div>
@@ -382,13 +289,6 @@ for(let i=1;i<=NSCENE;i++){
   b.addEventListener('click',()=>jumpScene(i));
   dotsEl.appendChild(b);
 }
-
-// 開場:上升空氣微粒(負延遲讓載入當下就有微粒在半空中)
-(()=>{const f=$('airflow');if(!f)return;
-  for(let i=0;i<34;i++){const d=document.createElement('i');
-    const s=2+Math.random()*5;
-    d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;--o:${(.15+Math.random()*.45).toFixed(2)};animation-duration:${9+Math.random()*14}s;animation-delay:-${(Math.random()*20).toFixed(1)}s`;
-    f.appendChild(d);}})();
 
 // S2 漂浮粒子
 (()=>{const h=$('haze');for(let i=0;i<26;i++){const p=document.createElement('i');
@@ -435,6 +335,62 @@ tgl.addEventListener('click',()=>{
 $('restart').addEventListener('click',()=>{playing=true;tgl.textContent='暫停';playClip(0);});
 
 showScene(1);   // 靜止狀態即呈現第一景
+
+// ─── 背景音樂:Web Audio 合成環境 pad(空靈和弦 + 氣流聲),不蓋過旁白 ───
+let ac=null,bgmGain=null,bgmOn=true,bgmTimer=null;
+const PROG=[ [220.0,261.63,329.63,392.0],   // Am7
+             [174.61,220.0,261.63,349.23],  // F
+             [196.0,246.94,293.66,392.0],   // G
+             [164.81,220.0,261.63,329.63] ];// Am/E
+let chordIdx=0;
+function bgmChord(){
+  if(!ac||!bgmOn)return;
+  const t=ac.currentTime,DUR=8;
+  PROG[chordIdx%PROG.length].forEach((f,i)=>{
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.type=i%2?'sine':'triangle';o.frequency.value=f;
+    o.detune.value=(Math.random()*8-4);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(.16/(i+1.5),t+2.5);   // 緩慢起音
+    g.gain.linearRampToValueAtTime(0,t+DUR+1.5);
+    o.connect(g).connect(bgmGain);
+    o.start(t);o.stop(t+DUR+2);
+  });
+  chordIdx++;
+  bgmTimer=setTimeout(bgmChord,8000);
+}
+function bgmStart(){
+  if(!bgmOn)return;
+  if(!ac){
+    ac=new (window.AudioContext||window.webkitAudioContext)();
+    bgmGain=ac.createGain();bgmGain.gain.value=.10;      // 整體壓低
+    const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1600;
+    bgmGain.connect(lp).connect(ac.destination);
+    // 氣流聲:白噪音過帶通,極低音量
+    const len=ac.sampleRate*2,buf=ac.createBuffer(1,len,ac.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+    const n=ac.createBufferSource();n.buffer=buf;n.loop=true;
+    const bp=ac.createBiquadFilter();bp.type='bandpass';bp.frequency.value=900;bp.Q.value=.6;
+    const ng=ac.createGain();ng.gain.value=.018;
+    n.connect(bp).connect(ng).connect(bgmGain);n.start();
+  }
+  if(ac.state==='suspended')ac.resume();
+  clearTimeout(bgmTimer);bgmChord();
+}
+function bgmStop(){clearTimeout(bgmTimer);if(ac)ac.suspend();}
+$('bgm').addEventListener('click',()=>{
+  bgmOn=!bgmOn;
+  $('bgm').textContent=bgmOn?'音樂：開':'音樂：關';
+  $('bgm').setAttribute('aria-pressed',bgmOn);
+  if(bgmOn&&playing)bgmStart();else bgmStop();
+});
+// 掛進既有播放流程
+const _start=start;
+start=function(){_start();bgmStart();};
+$('playbtn').removeEventListener('click',_start);
+$('playbtn').addEventListener('click',start);
+tgl.addEventListener('click',()=>{ if(playing)bgmStart(); else bgmStop(); });
+$('restart').addEventListener('click',bgmStart);
 </script>
 
 </html>
