@@ -124,7 +124,7 @@ h2{font-size:clamp(24px,4.5vw,40px);font-weight:700;margin:0;text-align:center;t
 
 /* ─── 開場遮罩 ─── */
 #cover{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:22px;background:radial-gradient(ellipse at 50% 35%,#131920 0%,var(--bg) 70%)}
+  gap:22px;background:radial-gradient(ellipse at 50% 35%,#131920 0%,var(--bg) 70%);overflow:hidden}
 #cover .eyebrow{animation:none}
 #cover h1{font-size:clamp(28px,5.5vw,52px)}
 #playbtn{display:flex;align-items:center;gap:12px;background:var(--air);color:#06201c;border:none;border-radius:999px;
@@ -133,6 +133,40 @@ h2{font-size:clamp(24px,4.5vw,40px);font-weight:700;margin:0;text-align:center;t
 #playbtn:hover{transform:scale(1.04)}
 #cover .hint{font-size:12px;color:var(--fg-dim)}
 #cover.gone{opacity:0;visibility:hidden;transition:opacity .8s,visibility .8s}
+
+/* ─── 開場動畫:空氣流動 ─── */
+/* 青色氣流光暈,緩慢飄移像空氣對流 */
+.aurora{position:absolute;inset:-20%;pointer-events:none;
+  background:radial-gradient(42% 32% at 28% 32%,rgba(95,212,196,.09),transparent 70%),
+             radial-gradient(36% 30% at 72% 62%,rgba(95,212,196,.06),transparent 70%);
+  animation:aurora 18s ease-in-out infinite alternate}
+@keyframes aurora{from{transform:translate(-3%,-2%) rotate(-2deg)}to{transform:translate(3%,2%) rotate(2deg)}}
+/* 上升的發光空氣微粒 */
+.airflow{position:absolute;inset:0;pointer-events:none}
+.airflow i{position:absolute;bottom:-4%;border-radius:50%;background:var(--air);opacity:0;
+  box-shadow:0 0 6px rgba(95,212,196,.8);animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:0}12%{opacity:var(--o,.4)}85%{opacity:var(--o,.4)}100%{transform:translateY(-108vh);opacity:0}}
+/* 元素依序浮現 */
+#cover .cv{animation:coverin .9s cubic-bezier(.22,1,.36,1) backwards}
+#cover .e1{animation-delay:.15s}
+#cover .e3{animation-delay:.65s}
+#cover .e4{animation-delay:.95s}
+@keyframes coverin{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+/* 標題:鈦銀光澤週期性掃過 */
+#cover h1{background:linear-gradient(105deg,var(--fg) 42%,#fff 50%,var(--air) 54%,var(--fg) 62%);
+  background-size:220% 100%;background-position:120% 0;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:coverin .9s cubic-bezier(.22,1,.36,1) .38s backwards,sheen 5.5s ease-in-out 1.6s infinite}
+@keyframes sheen{0%{background-position:120% 0}45%,100%{background-position:-20% 0}}
+/* 播放鈕:呼吸光暈 + 聲納擴散環(呼應感測器意象) */
+.playwrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.playwrap .ring{position:absolute;inset:0;border-radius:999px;border:1px solid rgba(95,212,196,.55);
+  pointer-events:none;animation:sonar 2.8s ease-out infinite}
+.playwrap .ring.r2{animation-delay:1.4s}
+@keyframes sonar{from{transform:scale(1);opacity:.7}to{transform:scale(1.85);opacity:0}}
+#playbtn{animation:breathe 2.8s ease-in-out infinite;transition:transform .3s}
+@keyframes breathe{0%,100%{box-shadow:0 0 28px rgba(95,212,196,.18)}50%{box-shadow:0 0 56px rgba(95,212,196,.45)}}
+/* 遮罩淡出後停掉背景動畫省資源 */
+#cover.gone .airflow,#cover.gone .aurora{display:none}
 
 /* ─── 手機版（窄螢幕）─── */
 @media (max-width:640px){
@@ -296,10 +330,15 @@ h2{font-size:clamp(24px,4.5vw,40px);font-weight:700;margin:0;text-align:center;t
     <div id="subs"><span id="subtext"></span></div>
 
     <div id="cover">
-      <div class="eyebrow">專案說明影片 · 約 2 分鐘</div>
+      <div class="aurora" aria-hidden="true"></div>
+      <div class="airflow" id="airflow" aria-hidden="true"></div>
+      <div class="cv e1 eyebrow">專案說明影片 · 約 2 分鐘</div>
       <h1>空品換氣智慧監控系統</h1>
-      <button id="playbtn">▶&nbsp;播放</button>
-      <div class="hint">含中文配音與字幕，請開啟聲音</div>
+      <div class="cv e3 playwrap">
+        <span class="ring" aria-hidden="true"></span><span class="ring r2" aria-hidden="true"></span>
+        <button id="playbtn">▶&nbsp;播放</button>
+      </div>
+      <div class="cv e4 hint">含中文配音與字幕，請開啟聲音</div>
     </div>
   </div>
 
@@ -343,6 +382,13 @@ for(let i=1;i<=NSCENE;i++){
   b.addEventListener('click',()=>jumpScene(i));
   dotsEl.appendChild(b);
 }
+
+// 開場:上升空氣微粒(負延遲讓載入當下就有微粒在半空中)
+(()=>{const f=$('airflow');if(!f)return;
+  for(let i=0;i<34;i++){const d=document.createElement('i');
+    const s=2+Math.random()*5;
+    d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;--o:${(.15+Math.random()*.45).toFixed(2)};animation-duration:${9+Math.random()*14}s;animation-delay:-${(Math.random()*20).toFixed(1)}s`;
+    f.appendChild(d);}})();
 
 // S2 漂浮粒子
 (()=>{const h=$('haze');for(let i=0;i<26;i++){const p=document.createElement('i');
