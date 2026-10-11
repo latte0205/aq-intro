@@ -351,7 +351,7 @@ function bgmChord(){
     o.type=i%2?'sine':'triangle';o.frequency.value=f;
     o.detune.value=(Math.random()*8-4);
     g.gain.setValueAtTime(0,t);
-    g.gain.linearRampToValueAtTime(.16/(i+1.5),t+2.5);   // 緩慢起音
+    g.gain.linearRampToValueAtTime(.4/(i+1.3),t+2.5);    // 緩慢起音
     g.gain.linearRampToValueAtTime(0,t+DUR+1.5);
     o.connect(g).connect(bgmGain);
     o.start(t);o.stop(t+DUR+2);
@@ -363,15 +363,15 @@ function bgmStart(){
   if(!bgmOn)return;
   if(!ac){
     ac=new (window.AudioContext||window.webkitAudioContext)();
-    bgmGain=ac.createGain();bgmGain.gain.value=.10;      // 整體壓低
-    const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1600;
+    bgmGain=ac.createGain();bgmGain.gain.value=.30;      // 低於旁白但聽得見
+    const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2000;
     bgmGain.connect(lp).connect(ac.destination);
     // 氣流聲:白噪音過帶通,極低音量
     const len=ac.sampleRate*2,buf=ac.createBuffer(1,len,ac.sampleRate),d=buf.getChannelData(0);
     for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
     const n=ac.createBufferSource();n.buffer=buf;n.loop=true;
     const bp=ac.createBiquadFilter();bp.type='bandpass';bp.frequency.value=900;bp.Q.value=.6;
-    const ng=ac.createGain();ng.gain.value=.018;
+    const ng=ac.createGain();ng.gain.value=.05;
     n.connect(bp).connect(ng).connect(bgmGain);n.start();
   }
   if(ac.state==='suspended')ac.resume();
